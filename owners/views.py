@@ -16,8 +16,22 @@ class OwnersView(View):
             email  = data['email'],
             age    = data['age'],       
             )
+        '''
         dog = Dogs.objects.create(
-            owner = owner,
+            owner  = owner
+            name  = data['dog'],
+            age    = data['dog_age']    
+            )  
+        '''      
+        return JsonResponse({'message':'created'}, status=201) # 201 created
+
+class DogsView(View):
+    def post(self,request):
+        data = json.loads(request.body)
+        owner = Owners.objects.get(id=data['owner_id'])
+        Dogs.objects.create(
+            id = data['id'],
+            owner_id = owner.id ,  # owner=owner 이렇게 넣으려면? 
             name  = data['dog'],
             age    = data['dog_age']    
             )
