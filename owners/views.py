@@ -27,32 +27,33 @@ class OwnersView(View):
 
     def get(self, request):
         owners = Owners.objects.all()
-        results = []
+        result_list = []
+        #dog_dictionary = {}
+        try:
+            for owner in owners:
+                results = {}
+                results["name"] = owner.name
+                results["email"] = owner.email
+                results['age']    = owner.age  
+                dog_list=[]
+                for owner_dog in owner.dogs_set.all():
+                    #dog_list=[] - 마지막것만나옴
+                    dog_list.append([owner_dog.name, owner_dog.age])
+                    results["dog"]=dog_list
+                result_list.append(results)
 
-        for owner in owners:
-            for owner_dog in owner.dogs_set.all():
-                results.append(
-                    {
-                        "name" : owner.name,
-                        "email" : owner.email,
-                        "age"   : owner.age,
-                        "owner's_dog" : owner_dog.name,
-                        "owner's_dog_age": owner_dog.age,
-                    }
-                )    
-        return JsonResponse({'results':results}, status=200)
+            return JsonResponse({'results':result_list}, status=200)
 
-                        # "owner's_dog": [
-                        #     for i in owner.dogs_set.all():
-                        #         {"dog_name":print(i.name),
-                        #          "dog_age"  :print(i.age) 
-                        #         ]
-                        # }
-              
+        except KeyError:
+            for owner in owners:
+                results = {}
+                results["name"] = owner.name
+                results["email"] = owner.email
+                results['age']    = owner.age  
+            result_list.append(results)
+
         
         
-
-
 class DogsView(View):
     def post(self,request):
         data = json.loads(request.body)
